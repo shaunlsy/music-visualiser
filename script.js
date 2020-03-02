@@ -13,7 +13,7 @@ window.onload = function() {
 
 function setupWebAudio() {
   var audio = document.createElement("audio");
-  audio.src = "./music/Roddy Ricch - The Box [Official Music Video].mp3";
+  audio.src = "./music/Ed Sheeran - Perfect (Official Music Video).mp3";
   audio.controls = "true";
   document.body.appendChild(audio);
   audio.style.width = window.innerWidth + "px";
@@ -28,12 +28,14 @@ function setupWebAudio() {
 
 function draw() {
   requestAnimationFrame(draw);
-  var freqByteData = new Uint8Array(analyser.frequencyBinCount);
+  var freqByteData = new Uint8Array(analyser.frequencyBinCount / 70);
   analyser.getByteFrequencyData(freqByteData);
-  console.log(freqByteData);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (var i = 1; i < freqByteData.length; i += 10) {
+  for (var i = 1; i < freqByteData.length; i += 2000) {
+    console.log(freqByteData.reduce((a, b) => a + b) / freqByteData.length);
+    console.log("hello");
+
     var random = Math.random,
       red = (random() * 255) >> 0,
       green = (random() * 255) >> 0,
@@ -43,4 +45,15 @@ function draw() {
     ctx.fillRect(i, canvas.height - freqByteData[i], 10, canvas.height);
     ctx.strokeRect(i, canvas.height - freqByteData[i], 10, canvas.height);
   }
+
+  const filterData = audioBuffer => {
+    const rawData = audioBuffer.getChannelData(0); // We only need to work with one channel of data
+    const samples = 70; // Number of samples we want to have in our final data set
+    const blockSize = Math.floor(rawData.length / samples); // Number of samples in each subdivision
+    const filteredData = [];
+    for (let i = 0; i < samples; i++) {
+      filteredData.push(rawData[i * blockSize]);
+    }
+    return filteredData;
+  };
 }
