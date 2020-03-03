@@ -14,7 +14,7 @@ var mic;
 var volHistory = [];
 
 function setup() {
-  createCanvas(0, 0);
+  noCanvas()
   song = loadSound(
     "sound.mp3",
     loaded
@@ -36,16 +36,16 @@ function setup() {
 
 }
 
-function changeBackground(col) {
-  background(col);
-}
+// function changeBackground(col) {
+//   background(col);
+// }
 
-function jumpSong() {
-  var len = song.duration();
-  var t = random(len);
-  console.log(t);
-  song.jump(t);
-}
+// function jumpSong() {
+//   var len = song.duration();
+//   var t = random(len);
+//   console.log(t);
+//   song.jump(t);
+// }
 
 function draw() {
   // background(random(255));
@@ -100,6 +100,6 @@ function togglePlaying() {
 function loaded() {
   button = createButton("play");
   button.mousePressed(togglePlaying);
-  jumpButton = createButton("jump");
-  jumpButton.mousePressed(jumpSong);
+  // jumpButton = createButton("jump");
+  // jumpButton.mousePressed(jumpSong);
 }
