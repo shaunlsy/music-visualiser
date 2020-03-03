@@ -2,6 +2,9 @@
 <body>
   <script>
     const audioCtx = new AudioContext();
+    audioCtx.resume().then(() => {
+      console.log("Playback resumed successfully");
+    });
 
     //Create audio source
     //Here, we use an audio file, but this could also be e.g. microphone input
