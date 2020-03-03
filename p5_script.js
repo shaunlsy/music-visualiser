@@ -77,9 +77,9 @@ function draw() {
   // line(volHistory.length, 0, volHistory.length, height);
   console.log(vol);
 
-  var diam = map(vol, 0, 0.3, 10, 200);
-  fill(255, 0, 255);
-  ellipse(width / 2, height / 2, diam, diam);
+  // var diam = map(vol, 0, 0.3, 10, 200);
+  // fill(255, 0, 255);
+  // ellipse(width / 2, height / 2, diam, diam);
 
   // var micVol = mic.getLevel();
   // console.log(micVol * 10);
