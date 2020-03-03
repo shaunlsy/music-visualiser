@@ -8,6 +8,10 @@ var button;
 var jumpButton;
 var sliderRate;
 var sliderPan;
+var amp;
+// var wave;
+var mic;
+var volHistory = [];
 
 function setup() {
   createCanvas(200, 200);
@@ -17,10 +21,16 @@ function setup() {
   );
   sliderRate = createSlider(0, 1.5, 1, 0.01);
   sliderPan = createSlider(-1, 1, 0, 0.01);
-  button = createButton("play");
-  button.mousePressed(togglePlaying);
-  jumpButton = createButton("jump");
-  jumpButton.mousePressed(jumpSong);
+  amp = new p5.Amplitude();
+  // wave = new p5.Oscillator();
+  // wave.setType("sine");
+  // wave.start();
+  // wave.amp(1);
+  // wave.freq(300);
+
+  // mic = new p5.AudioIn();
+  // mic.start();
+
   background(51);
 
   song.addCue(2, changeBackground, color(0, 0, 255));
@@ -34,7 +44,7 @@ function changeBackground(col) {
 
 function jumpSong() {
   var len = song.duration();
-  var t = 0; //random(len);
+  var t = random(len);
   console.log(t);
   song.jump(t);
 }
@@ -46,6 +56,33 @@ function draw() {
   // if (song.currentTime() > 5) {
   //   background(song.currentTime() * 10, 0, 255);
   // }
+  background(51);
+
+  var vol = amp.getLevel();
+  volHistory.push(vol);
+  stroke(255);
+  beginShape();
+  noFill();
+  for (var i = 0; i < volHistory.length; i++) {
+    var y = map(volHistory[i], 0, 1, height / 2, 0);
+    vertex(i, y);
+  }
+  endShape();
+
+  if (volHistory.length > width - 50) {
+    volHistory.splice(0, 1);
+  }
+
+  stroke(255, 0, 0);
+  line(volHistory.length, 0, volHistory.length, height);
+  // console.log(Math.floor(vol * 1000));
+
+  // var diam = map(vol, 0, 0.3, 10, 200);
+  // fill(255, 0, 255);
+  // ellipse(width / 2, height / 2, diam, diam);
+
+  // var micVol = mic.getLevel();
+  // console.log(micVol * 10);
 }
 
 function togglePlaying() {
@@ -60,5 +97,8 @@ function togglePlaying() {
 }
 
 function loaded() {
-  console.log("loaded");
+  button = createButton("play");
+  button.mousePressed(togglePlaying);
+  jumpButton = createButton("jump");
+  jumpButton.mousePressed(jumpSong);
 }
