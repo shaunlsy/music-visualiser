@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <script>
+    
+    xhr = new XMLHttpRequest();
+
+    var url = "https://macgyver.services";
+
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                    var json = JSON.parse(xhr.responseText);
+                    console.log(json)
+            }
+    }
+
+    var payload = JSON.stringify({
+            key: "free",
+            id: "6t7s5d7t",
+            data: {
+        "audio_file": "https://askmacgyver.com/test/Maroon-128.mp3"
+    }
+    });
+
+    xhr.send(payload);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <!-- <audio id='song' controls>
+    <source src="./../sound.mp3" type="audio/mpeg">
+  </audio> -->
+  
+  <script>
+    let audioContext, analyser;
+
+    window.onload = function() {
+      setupWebAudio()
+      analyze()
+    }
+
+    function setupWebAudio() {
+      var audio = document.createElement('audio')
+      audio.src = './../sound.mp3'
+      audio.controls = "true"
+      document.body.appendChild(audio)
+      audio.style.width = window.innerWidth = "px"
+
+      audioContext = new AudioContext
+      analyser = audioContext.createAnalyser()
+      var source = audioContext.createMediaElementSource(audio)
+
+      source.connect(analyser)
+      source.connect(audioContext.destination)
+      audio.play
+    }
+
+    function analyze() {
+      analyser.fftSize = 32
+      bufferLength = analyser.fftSize
+      var dataArray = new Uint8Array(bufferLength)
+      analyser.getByteTimeDomainData(dataArray)
+      // for (var i = 1; i < bufferLength.length; i += 10) {
+      //   console.log(bufferLength)
+      // }
+    }
+
+
+  </script>
+</body>
+</html>
