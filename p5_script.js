@@ -73,13 +73,13 @@ function draw() {
     volHistory.splice(0, 1);
   }
 
-  stroke(255, 0, 0);
-  line(volHistory.length, 0, volHistory.length, height);
-  // console.log(Math.floor(vol * 1000));
+  // stroke(255, 0, 0);
+  // line(volHistory.length, 0, volHistory.length, height);
+  console.log(vol);
 
-  // var diam = map(vol, 0, 0.3, 10, 200);
-  // fill(255, 0, 255);
-  // ellipse(width / 2, height / 2, diam, diam);
+  var diam = map(vol, 0, 0.3, 10, 200);
+  fill(255, 0, 255);
+  ellipse(width / 2, height / 2, diam, diam);
 
   // var micVol = mic.getLevel();
   // console.log(micVol * 10);
