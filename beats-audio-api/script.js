@@ -154,7 +154,9 @@ document.querySelector("form").addEventListener("submit", function(formEvent) {
     .searchTracks(queryInput.value.trim(), { limit: 1 })
     .then(function(results) {
       var track = results.tracks.items[0];
-      var previewUrl = track.preview_url;
+      console.log("track", track)
+      var previewUrl = track.external_urls;
+      console.log("preview url", previewUrl.spotify)
       audioTag.src = track.preview_url;
 
       var request = new XMLHttpRequest();
