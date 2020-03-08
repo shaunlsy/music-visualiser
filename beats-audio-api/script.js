@@ -160,13 +160,12 @@ document.querySelector("form").addEventListener("submit", function(formEvent) {
       var request = new XMLHttpRequest();
       request.open("GET", previewUrl, true);
       request.responseType = "arraybuffer";
+       // Create offline context
+      var context =
+          new (window.AudioContext || window.webkitAudioContext)();
       request.onload = function() {
-        // Create offline context
-        var OfflineContext =
-          window.OfflineAudioContext || window.webkitOfflineAudioContext;
-        var offlineContext = new OfflineContext(2, 30 * 44100, 44100);
-
-        offlineContext.decodeAudioData(request.response, function(buffer) {
+        context.decodeAudioData(request.response, function(buffer) {
+          var offlineContext = new OfflineAudioContext(2, buffer.length, buffer.sampleRate);
           // Create buffer source
           var source = offlineContext.createBufferSource();
           source.buffer = buffer;
@@ -178,7 +177,7 @@ document.querySelector("form").addEventListener("submit", function(formEvent) {
 
           var lowpass = offlineContext.createBiquadFilter();
           lowpass.type = "lowpass";
-          lowpass.frequency.value = 150;
+          lowpass.frequency.value = 400;
           lowpass.Q.value = 1;
 
           // Run the output of the source through the low pass.
@@ -204,9 +203,8 @@ document.querySelector("form").addEventListener("submit", function(formEvent) {
 
           source.start(0);
           offlineContext.startRendering();
-        });
-
-        offlineContext.oncomplete = function(e) {
+          // self = this
+          offlineContext.oncomplete = function(e) {
           var buffer = e.renderedBuffer;
           var peaks = getPeaks([
             buffer.getChannelData(0),
@@ -283,6 +281,7 @@ document.querySelector("form").addEventListener("submit", function(formEvent) {
 
           result.style.display = "block";
         };
+        });      
       };
       request.send();
     });

@@ -6,6 +6,7 @@ var SpotifyWebApi = (function() {
   var _accessToken = null;
 
   var _promiseProvider = function(promiseFunction) {
+    console.log("hello")
     return new window.Promise(promiseFunction);
   };
 
