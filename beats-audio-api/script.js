@@ -150,13 +150,14 @@ function getIntervals(peaks) {
 document.querySelector("form").addEventListener("submit", function(formEvent) {
   formEvent.preventDefault();
   result.style.display = "none";
+  console.log("hi spotify",spotifyApi)
   spotifyApi
     .searchTracks(queryInput.value.trim(), { limit: 1 })
     .then(function(results) {
       var track = results.tracks.items[0];
       console.log("track", track)
-      var previewUrl = track.external_urls;
-      console.log("preview url", previewUrl.spotify)
+      var previewUrl = track.preview_url;
+      console.log("full song", track.external_urls.spotify)
       audioTag.src = track.preview_url;
 
       var request = new XMLHttpRequest();
@@ -207,82 +208,82 @@ document.querySelector("form").addEventListener("submit", function(formEvent) {
           offlineContext.startRendering();
           // self = this
           offlineContext.oncomplete = function(e) {
-          var buffer = e.renderedBuffer;
-          var peaks = getPeaks([
-            buffer.getChannelData(0),
-            buffer.getChannelData(1)
-          ]);
-          var groups = getIntervals(peaks);
+            var buffer = e.renderedBuffer;
+            var peaks = getPeaks([
+              buffer.getChannelData(0),
+              buffer.getChannelData(1)
+            ]);
+            var groups = getIntervals(peaks);
 
-          var svg = document.querySelector("#svg");
-          svg.innerHTML = "";
-          var svgNS = "http://www.w3.org/2000/svg";
-          var rect;
-          peaks.forEach(function(peak) {
+            var svg = document.querySelector("#svg");
+            svg.innerHTML = "";
+            var svgNS = "http://www.w3.org/2000/svg";
+            var rect;
+            peaks.forEach(function(peak) {
+              rect = document.createElementNS(svgNS, "rect");
+              rect.setAttributeNS(
+                null,
+                "x",
+                (100 * peak.position) / buffer.length + "%"
+              );
+              rect.setAttributeNS(null, "y", 0);
+              rect.setAttributeNS(null, "width", 1);
+              rect.setAttributeNS(null, "height", "100%");
+              svg.appendChild(rect);
+            });
+
             rect = document.createElementNS(svgNS, "rect");
-            rect.setAttributeNS(
-              null,
-              "x",
-              (100 * peak.position) / buffer.length + "%"
-            );
+            rect.setAttributeNS(null, "id", "progress");
             rect.setAttributeNS(null, "y", 0);
             rect.setAttributeNS(null, "width", 1);
             rect.setAttributeNS(null, "height", "100%");
             svg.appendChild(rect);
-          });
 
-          rect = document.createElementNS(svgNS, "rect");
-          rect.setAttributeNS(null, "id", "progress");
-          rect.setAttributeNS(null, "y", 0);
-          rect.setAttributeNS(null, "width", 1);
-          rect.setAttributeNS(null, "height", "100%");
-          svg.appendChild(rect);
+            svg.innerHTML = svg.innerHTML; // force repaint in some browsers
 
-          svg.innerHTML = svg.innerHTML; // force repaint in some browsers
-
-          var top = groups
-            .sort(function(intA, intB) {
-              return intB.count - intA.count;
-            })
-            .splice(0, 5);
-
-          text.innerHTML =
-            '<div id="guess">Guess for track <strong>' +
-            track.name +
-            "</strong> by " +
-            "<strong>" +
-            track.artists[0].name +
-            "</strong> is <strong>" +
-            Math.round(top[0].tempo) +
-            " BPM</strong>" +
-            " with " +
-            top[0].count +
-            " samples.</div>";
-
-          text.innerHTML +=
-            '<div class="small">Other options are ' +
-            top
-              .slice(1)
-              .map(function(group) {
-                return group.tempo + " BPM (" + group.count + ")";
+            var top = groups
+              .sort(function(intA, intB) {
+                return intB.count - intA.count;
               })
-              .join(", ") +
-            "</div>";
+              .splice(0, 5);
 
-          var printENBPM = function(tempo) {
+            text.innerHTML =
+              '<div id="guess">Guess for track <strong>' +
+              track.name +
+              "</strong> by " +
+              "<strong>" +
+              track.artists[0].name +
+              "</strong> is <strong>" +
+              Math.round(top[0].tempo) +
+              " BPM</strong>" +
+              " with " +
+              top[0].count +
+              " samples.</div>";
+
             text.innerHTML +=
-              '<div class="small">The tempo according to Spotify is ' +
-              tempo +
-              " BPM</div>";
-          };
-          spotifyApi
-            .getAudioFeaturesForTrack(track.id)
-            .then(function(audioFeatures) {
-              printENBPM(audioFeatures.tempo);
-            });
+              '<div class="small">Other options are ' +
+              top
+                .slice(1)
+                .map(function(group) {
+                  return group.tempo + " BPM (" + group.count + ")";
+                })
+                .join(", ") +
+              "</div>";
 
-          result.style.display = "block";
-        };
+            var printENBPM = function(tempo) {
+              text.innerHTML +=
+                '<div class="small">The tempo according to Spotify is ' +
+                tempo +
+                " BPM</div>";
+            };
+            spotifyApi
+              .getAudioFeaturesForTrack(track.id)
+              .then(function(audioFeatures) {
+                printENBPM(audioFeatures.tempo);
+              });
+
+            result.style.display = "block";
+          };
         });      
       };
       request.send();
